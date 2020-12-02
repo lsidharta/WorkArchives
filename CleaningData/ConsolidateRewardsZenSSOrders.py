@@ -23,7 +23,7 @@ def tidy_zen_data():
     dfzen.loc[(dfzen['Already Shipped']==1), 'status'] = "ship"
 
     # create 'inboundOrderId' from 'CO#'
-    dfzen['inboundOrderId'] = dfzen['CO#'].replace('CR', '')
+    dfzen['inboundOrderId'] = dfzen['CO#'].str.replace('CR', '')
 
     # create column 'addr'
     dfzen['addr'] = dfzen['Shipping Address 1'] + ';' + dfzen['Shipping City'] + ';' + dfzen['Shipping State'] + ';' + dfzen['Shipping Zip']
@@ -86,7 +86,7 @@ def get_shipstation_shipments():
                     decoded_json = json.loads(response.content)
                     shipments.extend(decoded_json["shipments"])   # shipments is list of list
     except requests.RequestException as e:
-        logging.error ("Error HTTP Requests to ShipStation %s" % e)
+        print ("Error HTTP Requests to ShipStation %s" % e)
     return(shipments)
 
 def tidy_shipstation():
@@ -101,7 +101,8 @@ def tidy_shipstation():
     # rename the columns
     usecolums = ['orderRefId', 'shipDate', 'trackingId', 'shipper']
     dfss = pd.DataFrame(filtered_shipments, columns=usecolums)
-
+    dfss.loc[dfss['shipper']=='canada_post', 'shipper'] = "Canada Post"
+    dfss.loc[dfss['shipper']=='purolator', 'shipper'] = "Purolator"
     return dfss
 
 dfzen = tidy_zen_data()
@@ -111,7 +112,7 @@ dfclap = tidy_clapton_inbound()
 print ("dfclap: " + str(dfclap.shape))
 print (dfclap.columns)
 # get orders which are created in Zenventory
-dfzenclap = pd.merge(dfzen, dfclap, how='left', on='inboundOrderId')
+dfzenclap = pd.merge(dfzen, dfclap, how='inner', on='inboundOrderId')
 print ("dfzenclap: " + str(dfzenclap.shape))
 dfss = tidy_shipstation()
 print ("dfss: " + str(dfss.shape))
@@ -124,6 +125,7 @@ for index in dfzenclapss.index:
         dfzenclapss.loc[index,'status'] = "pend"
 #dfzenclapss.loc[((dfzenclapss['trackingId'])>0) & (len(dfzenclapss['shipDate'])>0 & (dfzenclapss['status']=='pend')), 'status'] = "ship"
 # reorder columns
-reorderColumns = ['program','orderDate','shipDate','trackingId','status','orderRefId','inboundOrderId','fname','lname','addr','phone','email','sku']
+reorderColumns = ['program','orderDate','shipDate','shipper','trackingId','status','orderRefId','inboundOrderId','inboundOrderDate','fname','lname','addr','phone','email','sku']
 dfzenclapss = dfzenclapss[reorderColumns]
 dfzenclapss.to_excel("telus/ClaptonZenShipMergeInner.xlsx", index=False)
+dfzenclapss.to_csv("telus/ClaptonZenShipMergeInner.csv", index=False)
