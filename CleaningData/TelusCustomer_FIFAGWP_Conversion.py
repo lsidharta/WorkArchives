@@ -1,5 +1,5 @@
 """
-Convert export of TelusCustomer table to TelusPromo_db.csv
+Convert export of TelusCustomer table to FIFACustomersMaster.csv and FIFACustomerOrders.csv, GWPCustomersMaster.csv and GWPCustomerOrders.csv
 """
 
 import os
