@@ -69,6 +69,7 @@ def convert_database(df_origin):
         'email':'EmailAddress', 'firstname':'Firstname', 'lastname':'Lastname', 'cell_phone':'CellPhone', \
         'phone':'HomePhone', 'email_primary':'EmailPrimary', 'active':'Active', 'loaddate':'LoadDate'}
     df_reordered.rename(columns=new_name, inplace=True)
+    df_reordered['Filename'] = "Fulfilment20_TelusCustomer"
     # FIFA Customers Master and GWP Customers Master
     df_fifa = df_reordered.loc[df_reordered['OfferID'] == 9999]
     df_gwp = df_reordered.loc[df_reordered['OfferID'] != 9999]
