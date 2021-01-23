@@ -71,8 +71,8 @@ def convert_database(df_origin):
     df_reordered.rename(columns=new_name, inplace=True)
     df_reordered['Filename'] = "Fulfilment20_TelusCustomer"
     # FIFA Customers Master and GWP Customers Master
-    df_fifa = df_reordered.loc[df_reordered['OfferID'] == 9999]
-    df_gwp = df_reordered.loc[df_reordered['OfferID'] != 9999]
+    df_fifa = df_reordered.loc[df_reordered['OfferID'] == '9999'].copy()
+    df_gwp = df_reordered.loc[df_reordered['OfferID'] != '9999'].copy()
     df_fifa.rename(columns={'TelusCustomerID':'FIFACustomerID'}, inplace=True)
     df_gwp.rename(columns={'TelusCustomerID':'GWPCustomerID'}, inplace=True)
     return (df_fifa, df_gwp)
@@ -94,7 +94,7 @@ folder_gwpcsvdb = r"C:\\Users\\lsidh\\Python\\QMedia\\GWPdb"
 df1 = read_xlsx_database_filename(fname_teluscustomerdb)
 df_fifa_customers, df_gwp_customers = convert_database(df1)
 # save to the new database
-fname_csvdb = "FIFACustomersMaster" + datetime.today().strftime("%Y%m%d") + ".csv"#%Y-%m-%d
+fname_csvdb = "FIFACustomers" + datetime.today().strftime("%Y%m%d") + ".csv"#%Y-%m-%d
 df_fifa_customers.to_csv('/'.join([folder_fifacsvdb, fname_csvdb]), index=False, encoding='utf-8')
-fname_csvdb = "GWPCustomersMaster" + datetime.today().strftime("%Y%m%d") + ".csv"#%Y-%m-%d
+fname_csvdb = "GWPCustomers" + datetime.today().strftime("%Y%m%d") + ".csv"#%Y-%m-%d
 df_gwp_customers.to_csv('/'.join([folder_gwpcsvdb, fname_csvdb]), index=False, encoding='utf-8')
